@@ -1,0 +1,57 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.pfx
+*.p12
+secrets/
+
+# Runtime files and logs
+.run/
+*.log
+*.pid
+logs/
+
+# IDE and editor files
+.idea/
+.vs/
+.vscode/
+*.user
+*.suo
+*.iml
+
+# Build output and dependencies
+**/bin/
+**/obj/
+**/target/
+**/build/
+**/dist/
+**/node_modules/
+
+# Test and coverage output
+**/TestResults/
+**/coverage/
+*.coverage
+*.trx
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Local certificates and signed test documents
+*.cer
+*.crt
+*.jks
+signed_*.pdf
+*_signed.pdf

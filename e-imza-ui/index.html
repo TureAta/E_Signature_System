@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#102a27">
+    <meta name="description" content="Belgelerinizi güvenle yönetin ve elektronik imza ile imzalayın.">
+    <title>İmzaKasa — Güvenli elektronik imza</title>
+    <link rel="stylesheet" href="/styles.css?v=20260821">
+    <script src="/app.js?v=20260821-security" defer></script>
+</head>
+<body>
+<div class="ambient ambient-one" aria-hidden="true"></div>
+<div class="ambient ambient-two" aria-hidden="true"></div>
+
+<div id="toastRegion" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+<section id="authView" class="auth-page">
+    <header class="public-header">
+        <a class="brand" href="#" aria-label="İmzaKasa ana sayfa">
+            <span class="brand-mark" aria-hidden="true">ik</span>
+            <span>İmzaKasa</span>
+        </a>
+        <div class="trust-pill"><span class="status-dot"></span> Yerel ve güvenli altyapı</div>
+    </header>
+
+    <main class="auth-layout">
+        <section class="hero-copy" aria-labelledby="heroTitle">
+            <div class="eyebrow"><span>Yeni nesil belge güvenliği</span></div>
+            <h1 id="heroTitle">İmzanız kadar<br><em>size özel.</em></h1>
+            <p class="hero-lead">Belgelerinizi tek bir güvenli alanda yönetin, akıllı kartınızla saniyeler içinde imzalayın.</p>
+
+            <div class="hero-proof">
+                <div class="proof-item">
+                    <span class="proof-icon" aria-hidden="true">01</span>
+                    <div><strong>Belge sizde kalır</strong><small>Dosyalar yerel altyapınızda saklanır.</small></div>
+                </div>
+                <div class="proof-item">
+                    <span class="proof-icon" aria-hidden="true">02</span>
+                    <div><strong>PIN kaydedilmez</strong><small>PIN yalnızca imza anında kullanılır.</small></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="auth-card" aria-labelledby="authTitle">
+            <div class="auth-card-top">
+                <span class="mini-seal" aria-hidden="true">✓</span>
+                <p>Güvenli oturum</p>
+            </div>
+            <h2 id="authTitle">Hesabınıza erişin</h2>
+            <p class="auth-subtitle">Belgelerinize kaldığınız yerden devam edin.</p>
+
+            <div class="auth-tabs" role="tablist" aria-label="Hesap işlemleri">
+                <button class="auth-tab active" id="loginTab" role="tab" aria-selected="true" aria-controls="loginPanel">Giriş yap</button>
+                <button class="auth-tab" id="registerTab" role="tab" aria-selected="false" aria-controls="registerPanel">Hesap oluştur</button>
+            </div>
+
+            <div id="loginPanel" role="tabpanel" aria-labelledby="loginTab">
+                <form id="loginForm" class="auth-form">
+                    <label>Kullanıcı adı
+                        <span class="input-shell"><span aria-hidden="true">@</span><input id="loginUsername" autocomplete="username" maxlength="50" required placeholder="kullanici.adi"></span>
+                    </label>
+                    <label>Şifre
+                        <span class="input-shell"><span aria-hidden="true">●</span><input id="loginPassword" type="password" autocomplete="current-password" maxlength="72" required placeholder="Şifrenizi girin"></span>
+                    </label>
+                    <button class="primary-button full" type="submit"><span>Güvenli giriş yap</span><span aria-hidden="true">→</span></button>
+                </form>
+            </div>
+
+            <div id="registerPanel" role="tabpanel" aria-labelledby="registerTab" hidden>
+                <form id="registerForm" class="auth-form">
+                    <label>Kullanıcı adı
+                        <span class="input-shell"><span aria-hidden="true">@</span><input id="registerUsername" autocomplete="username" minlength="3" maxlength="50" pattern="[A-Za-zÀ-ž0-9._-]+" required placeholder="kullanici.adi"></span>
+                    </label>
+                    <label>E-posta
+                        <span class="input-shell"><span aria-hidden="true">✉</span><input id="registerEmail" type="email" autocomplete="email" maxlength="254" required placeholder="siz@kurum.com"></span>
+                    </label>
+                    <label>Şifre
+                        <span class="input-shell"><span aria-hidden="true">●</span><input id="registerPassword" type="password" autocomplete="new-password" minlength="10" maxlength="72" required placeholder="En az 10 karakter"></span>
+                    </label>
+                    <button class="primary-button full" type="submit"><span>Hesabımı oluştur</span><span aria-hidden="true">→</span></button>
+                </form>
+            </div>
+
+            <p class="privacy-note"><span aria-hidden="true">◇</span> Oturum anahtarınız tarayıcı JavaScript'inden korunur.</p>
+        </section>
+    </main>
+</section>
+
+<section id="appView" class="app-page" hidden>
+    <header class="app-header">
+        <a class="brand brand-light" href="#" aria-label="İmzaKasa">
+            <span class="brand-mark" aria-hidden="true">ik</span>
+            <span>İmzaKasa</span>
+        </a>
+        <div class="app-header-actions">
+            <div class="service-status"><span class="status-dot"></span><span>Sistem hazır</span></div>
+            <div class="profile-chip"><span id="avatarInitial">K</span><div><strong id="profileName">Kullanıcı</strong><small>Güvenli oturum</small></div></div>
+            <button id="logoutButton" class="icon-button" type="button" title="Çıkış yap" aria-label="Çıkış yap">↗</button>
+        </div>
+    </header>
+
+    <main class="dashboard">
+        <section class="welcome-row">
+            <div>
+                <p class="section-kicker">BELGE MERKEZİ</p>
+                <h1>Merhaba, <span id="welcomeName">Kullanıcı</span>.</h1>
+                <p>Belgeleriniz düzenli, imzanız hazır.</p>
+            </div>
+            <button id="openFilePicker" class="primary-button" type="button"><span aria-hidden="true">＋</span> Yeni belge yükle</button>
+        </section>
+
+        <section class="metric-grid" aria-label="Belge özeti">
+            <article class="metric-card metric-dark">
+                <div><span class="metric-label">Tüm belgeler</span><strong id="totalCount">0</strong></div>
+                <span class="metric-glyph" aria-hidden="true">▤</span>
+                <small>Güvenli kasanızdaki toplam belge</small>
+            </article>
+            <article class="metric-card">
+                <div><span class="metric-label">İmzalananlar</span><strong id="signedCount">0</strong></div>
+                <span class="metric-glyph mint" aria-hidden="true">✓</span>
+                <small>Elektronik imzası tamamlanan</small>
+            </article>
+            <article class="metric-card">
+                <div><span class="metric-label">İmza bekleyen</span><strong id="pendingCount">0</strong></div>
+                <span class="metric-glyph sand" aria-hidden="true">⌁</span>
+                <small>İşlem bekleyen belgeleriniz</small>
+            </article>
+        </section>
+
+        <section class="workspace-grid">
+            <article class="upload-card">
+                <div class="panel-heading">
+                    <div><p class="section-kicker">HIZLI İŞLEM</p><h2>Belge yükle</h2></div>
+                    <span class="file-limit">PDF · En fazla 50 MB</span>
+                </div>
+                <input id="fileInput" type="file" accept="application/pdf,.pdf" hidden>
+                <div id="dropZone" class="drop-zone" role="button" tabindex="0" aria-label="PDF seçmek için tıklayın veya sürükleyip bırakın">
+                    <span class="upload-symbol" aria-hidden="true">↑</span>
+                    <strong id="dropTitle">PDF belgenizi buraya bırakın</strong>
+                    <span id="dropSubtitle">veya bilgisayarınızdan seçmek için tıklayın</span>
+                    <button class="secondary-button" type="button" tabindex="-1">Dosya seç</button>
+                </div>
+                <div id="selectedFile" class="selected-file" hidden>
+                    <span class="pdf-badge">PDF</span>
+                    <div><strong id="selectedFileName"></strong><small id="selectedFileSize"></small></div>
+                    <button id="clearFileButton" class="text-button" type="button">Kaldır</button>
+                    <button id="uploadButton" class="primary-button compact" type="button">Kasaya yükle</button>
+                </div>
+            </article>
+
+            <article class="security-card">
+                <span class="security-orbit" aria-hidden="true"><span>✓</span></span>
+                <div><p class="section-kicker light">GÜVENLİ İMZA</p><h2>Tokenınız hazır mı?</h2><p>Akıllı kartınızı bilgisayarınıza takın. PIN’iniz hiçbir zaman kaydedilmez.</p></div>
+                <div class="security-steps"><span><b>1</b> Belgeyi seç</span><span><b>2</b> Konumu belirle</span><span><b>3</b> PIN ile imzala</span></div>
+            </article>
+        </section>
+
+        <section class="documents-panel">
+            <div class="documents-toolbar">
+                <div><p class="section-kicker">ARŞİVİNİZ</p><h2>Belgelerim</h2></div>
+                <div class="toolbar-actions">
+                    <label class="search-box"><span aria-hidden="true">⌕</span><input id="searchInput" type="search" placeholder="Belge ara..." aria-label="Belge ara"></label>
+                    <select id="statusFilter" aria-label="Duruma göre filtrele">
+                        <option value="all">Tüm durumlar</option>
+                        <option value="signed">İmzalandı</option>
+                        <option value="pending">İmza bekliyor</option>
+                    </select>
+                    <button id="refreshButton" class="icon-button pale" type="button" title="Yenile" aria-label="Belgeleri yenile">↻</button>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table>
+                    <thead><tr><th>Belge</th><th>Durum</th><th>Yüklenme tarihi</th><th class="align-right">İşlemler</th></tr></thead>
+                    <tbody id="documentsBody"></tbody>
+                </table>
+                <div id="documentsLoading" class="table-state"><span class="spinner"></span><p>Belgeler hazırlanıyor...</p></div>
+                <div id="emptyState" class="table-state" hidden><span class="empty-glyph" aria-hidden="true">▱</span><h3>Henüz belgeniz yok</h3><p>İlk PDF belgenizi yükleyerek güvenli arşivinizi oluşturun.</p></div>
+                <div id="noResultsState" class="table-state" hidden><span class="empty-glyph" aria-hidden="true">⌕</span><h3>Sonuç bulunamadı</h3><p>Arama metnini veya durum filtresini değiştirmeyi deneyin.</p></div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="app-footer"><span>İmzaKasa · Yerel güvenli belge altyapısı</span><span>Verileriniz bu sistemin dışına çıkmaz.</span></footer>
+</section>
+
+<div id="signModal" class="modal-backdrop" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="signTitle">
+        <button id="closeSignModal" class="modal-close" type="button" aria-label="Pencereyi kapat">×</button>
+        <div class="modal-seal" aria-hidden="true">✦</div>
+        <p class="section-kicker">ELEKTRONİK İMZA</p>
+        <h2 id="signTitle">Belgeyi güvenle imzalayın</h2>
+        <p class="modal-copy">İmza işlemi akıllı kartınız üzerinden gerçekleşir. PIN bilginiz saklanmaz.</p>
+        <div class="sign-file"><span class="pdf-badge">PDF</span><div><strong id="signFileName"></strong><small>İmzalanmaya hazır</small></div></div>
+        <form id="signForm">
+            <label>İmza konumu
+                <select id="positionSelect" required>
+                    <option value="BottomRight">Sağ alt köşe</option>
+                    <option value="BottomLeft">Sol alt köşe</option>
+                    <option value="TopRight">Sağ üst köşe</option>
+                    <option value="TopLeft">Sol üst köşe</option>
+                </select>
+            </label>
+            <label>E-imza PIN kodu
+                <span class="input-shell"><span aria-hidden="true">●</span><input id="pinInput" type="password" inputmode="numeric" autocomplete="off" required placeholder="PIN kodunuzu girin"></span>
+            </label>
+            <div class="modal-actions"><button id="cancelSignButton" class="secondary-button" type="button">Vazgeç</button><button class="primary-button" type="submit"><span>İmzala ve indir</span><span aria-hidden="true">→</span></button></div>
+        </form>
+    </section>
+</div>
+</body>
+</html>
