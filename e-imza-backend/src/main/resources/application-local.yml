@@ -1,0 +1,20 @@
+server:
+  port: 5055
+
+spring:
+  datasource:
+    # Lokal'de veritabanı Docker'da çalışsa bile ona localhost üzerinden erişiriz.
+    url: jdbc:postgresql://localhost:5432/eimza_db
+    username: admin
+    password: ${POSTGRES_PASSWORD}
+
+minio:
+  # Lokal'de MinIO Docker'da çalışsa bile ona localhost üzerinden erişiriz.
+  url: http://localhost:9000
+  bucket-name: eimza-documents
+  access-key: ${MINIO_ROOT_USER}
+  secret-key: ${MINIO_ROOT_PASSWORD}
+
+signing-service:
+  csharp-url: http://localhost:5194/api/sign
+  api-key: ${SIGNER_API_KEY}

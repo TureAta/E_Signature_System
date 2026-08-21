@@ -2,17 +2,40 @@
 .env
 .env.*
 !.env.example
+.envrc
+.direnv/
+**/.env
+**/.env.*
+!**/.env.example
+appsettings.*.local.json
+application-local-secrets.yml
+application-local-secrets.yaml
+docker-compose.override.yml
+docker-compose.override.yaml
+compose.override.yml
+compose.override.yaml
 *.key
 *.pem
 *.pfx
 *.p12
+*.keystore
 secrets/
+**/secrets/
 
 # Runtime files and logs
 .run/
 *.log
 *.pid
 logs/
+*.dmp
+*.dump
+*.sql
+*.sqlite
+*.sqlite3
+*.db
+*.hprof
+heapdump*
+hs_err_pid*
 
 # IDE and editor files
 .idea/
@@ -55,3 +78,11 @@ $RECYCLE.BIN/
 *.jks
 signed_*.pdf
 *_signed.pdf
+uploads/
+documents/
+storage/
+local-data/
+**/uploads/
+**/documents/
+**/storage/
+**/local-data/

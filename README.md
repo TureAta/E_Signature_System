@@ -1,86 +1,114 @@
-# E-imza uygulamasini calistirma
+# İmzaKasa
 
-Uygulama iki farkli ortamda birlikte calisir:
+İmzaKasa; PDF belgelerini kullanıcı bazında saklamak, yönetmek ve PKCS#11 uyumlu USB e-imza tokenı ile imzalamak için geliştirilmiş, kendi altyapınızda çalıştırılabilen bir belge yönetim uygulamasıdır.
 
-- Kullanici arayuzu, Spring Boot, PostgreSQL, MinIO ve Adminer Docker Compose icinde
-- C# imzalama servisi Windows host uzerinde
+> Bu proje geliştirme ve yerel ağ kullanımı için hazırlanmıştır. İnternete doğrudan açılmamalıdır. Üretim ortamında HTTPS, güvenilir bir ters proxy, erişim kısıtlamaları ve düzenli güvenlik güncellemeleri kullanılmalıdır.
 
-C# servisinin Windows'ta calismasi gerekir; akilli kart surucusunun PKCS#11 DLL dosyasini ve USB tokeni burada kullanir. Linux container icinde Windows DLL dosyalari yuklenemez.
+## Özellikler
 
-Kullanicilar uygulamaya su adresten erisir:
+- Kullanıcı kaydı ve güvenli oturum yönetimi
+- Kullanıcıya özel belge erişimi ve MinIO depolama alanı
+- PDF dosya türü, boyut ve içerik doğrulaması
+- PKCS#11 destekli USB token ile görünür PDF imzası
+- PIN bilgisini kaydetmeden yerel imzalama
+- Docker Compose ile frontend, backend, PostgreSQL ve MinIO kurulumu
+- Servis anahtarı, istek sınırlandırma ve aynı kaynak kontrolleri
+- Tek komutla başlatma ve durdurma
+
+## Mimari
+
+| Bileşen | Teknoloji | Çalışma ortamı |
+| --- | --- | --- |
+| Kullanıcı arayüzü | HTML, CSS, JavaScript, Nginx | Docker |
+| Uygulama API'si | Java, Spring Boot | Docker |
+| Veritabanı | PostgreSQL | Docker |
+| Belge depolama | MinIO | Docker |
+| İmzalama servisi | .NET, iText, Pkcs11Interop | Windows host |
+
+.NET imzalama servisi USB token sürücüsüne erişebilmek için Windows üzerinde çalışır. Token üreticisinin PKCS#11 kütüphanesinin sistemde kurulu olması gerekir.
+
+## Gereksinimler
+
+- Windows 10 veya 11
+- Docker Desktop
+- .NET 8 SDK
+- PowerShell 5.1 veya daha yeni bir sürüm
+- Gerçek imza için PKCS#11 uyumlu USB token ve üretici sürücüsü
+
+## Kurulum
+
+Depoyu klonladıktan sonra proje kökünde çalıştırın:
+
+```powershell
+.\start-all.ps1
+```
+
+İlk çalıştırmada gerekli servis sırları `e-imza-backend/.env` dosyasında kriptografik olarak güvenli ve rastgele değerlerle oluşturulur. Bu dosya Git tarafından dışlanır; paylaşılmamalı, ekran görüntülerine eklenmemeli ve kaynak kontrolüne alınmamalıdır.
+
+Uygulama hazır olduğunda kullanıcı arayüzü şu adrestedir:
 
 ```text
 http://localhost:3000
 ```
 
-Ayni agdaki baska bilgisayarlar `localhost` yerine uygulamanin calistigi bilgisayarin IP adresini kullanir: `http://BILGISAYAR-IP:3000`. Backend, PostgreSQL, MinIO ve Adminer portlari guvenlik icin yalnizca uygulamanin calistigi bilgisayardan erisilebilir.
-
-> Guvenlik: `3000` adresi varsayilan olarak HTTP kullanir. Uygulamayi internet uzerinden yayinlamayin. Guvenilmeyen veya ortak bir agda kullanim icin onune HTTPS sonlandiran bir ters proxy ve guvenilir TLS sertifikasi koyun.
-
-Ilk baslatmada PostgreSQL, MinIO, JWT ve imzalama servisi icin rastgele guvenli anahtarlar `e-imza-backend/.env` dosyasinda otomatik olusturulur. Bu dosyayi paylasmayin veya Git'e eklemeyin. Anahtarlar kaybolursa mevcut oturumlar ve servis baglantilari gecersiz olur.
-
-Tum servisleri tek komutla baslatmak icin PowerShell acip bu klasorde sunu calistirin:
-
-```powershell
-.\start-all.ps1
-```
-
-Tum servisleri durdurmak icin:
+Servisleri durdurmak için:
 
 ```powershell
 .\stop-all.ps1
 ```
 
-## PowerShell script izni
+Veritabanı ve belge verileri Docker volume'larında korunur.
 
-Komutlari `e-imza` ana klasorunde calistirin. `e-imza-backend` klasorundeyseniz once bir ust klasore donun:
+## Ortam değişkenleri
+
+Gerçek değerler yalnızca yerel `.env` dosyasında bulunmalıdır. Güvenli değişken adları ve örnek biçim için `e-imza-backend/.env.example` kullanılabilir.
+
+| Değişken | Amaç |
+| --- | --- |
+| `POSTGRES_PASSWORD` | PostgreSQL servis parolası |
+| `MINIO_ROOT_USER` | MinIO yönetici kullanıcı adı |
+| `MINIO_ROOT_PASSWORD` | MinIO yönetici parolası |
+| `JWT_SECRET` | Oturum belirteci imzalama anahtarı |
+| `SIGNER_API_KEY` | Backend ile yerel imzalama servisi arasındaki anahtar |
+
+README, kaynak kod veya Docker Compose dosyasına gerçek parola yazmayın.
+
+## PowerShell izin hatası
+
+`running scripts is disabled on this system` hatası alınırsa yalnızca mevcut kullanıcı için yerel betiklere izin verilebilir:
 
 ```powershell
-cd ..
-```
-
-`running scripts is disabled on this system` veya `PSSecurityException` hatasi alirsaniz PowerShell script calistirma politikasi devre disidir.
-
-Onerilen kalici cozum, yalnizca kendi Windows kullaniciniz icin yerel scriptlere izin vermektir. Bu islem yonetici yetkisi istemez:
-
-```powershell
-Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
 Unblock-File .\start-all.ps1
 Unblock-File .\stop-all.ps1
 ```
 
-Bundan sonra scriptleri normal sekilde calistirabilirsiniz:
-
-```powershell
-.\start-all.ps1
-.\stop-all.ps1
-```
-
-PowerShell politikasini kalici olarak degistirmek istemiyorsaniz mevcut terminal oturumu icin gecici izin verebilirsiniz. Bu izin terminal kapatildiginda sifirlanir:
-
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-.\start-all.ps1
-```
-
-Tek bir komut icin izin vermek de mumkundur:
+Kalıcı ayar değiştirmeden tek çalıştırma için:
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\start-all.ps1
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\stop-all.ps1
 ```
 
-Etkin PowerShell politikalarini kontrol etmek icin:
+## Güvenlik notları
 
-```powershell
-Get-ExecutionPolicy -List
+- USB token PIN'i uygulama tarafından saklanmaz; yalnızca imza işlemi sırasında yerel servise iletilir.
+- `.env`, kullanıcı belgeleri, sertifikalar, özel anahtarlar, loglar ve çalışma dosyaları Git ve Docker build context'lerinden dışlanmıştır.
+- Backend, PostgreSQL, MinIO ve yönetim portları varsayılan olarak yalnızca yerel bilgisayara bağlanır.
+- Kullanıcı arayüzünün `3000` portu yerel ağ erişimine açıktır. Güvenilmeyen ağlarda güvenlik duvarıyla sınırlandırılmalıdır.
+- Token PIN'i sohbet, issue, log veya ekran görüntüsü üzerinden paylaşılmamalıdır.
+- USB token olmadan gerçek imza işlemi uçtan uca doğrulanamaz.
+
+## Proje yapısı
+
+```text
+e-imza/
+├── e-imza-ui/       Kullanıcı arayüzü ve Nginx yapılandırması
+├── e-imza-backend/  Spring Boot API ve Docker Compose
+├── e-imza-net/      Windows üzerinde çalışan imzalama servisi
+├── start-all.ps1    Tüm servisleri başlatır
+└── stop-all.ps1     Tüm servisleri durdurur
 ```
 
-Ilk baslatma Docker imajlari ve NuGet/Maven paketleri indirilecegi icin daha uzun surebilir.
+## Katkı
 
-Adminer ve Swagger varsayilan olarak kapatilmistir. Gecici veritabani yonetimi gerektiginde yalnizca yerel bilgisayarda su komutla Adminer baslatilabilir:
-
-```powershell
-cd .\e-imza-backend
-docker compose --profile tools up -d adminer
-```
+Değişiklik göndermeden önce gerçek sırların ve kullanıcı belgelerinin commit'e dahil olmadığını kontrol edin. Güvenlik açıklarını herkese açık issue yerine depo sahibine özel bir kanaldan bildirin.

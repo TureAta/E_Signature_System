@@ -1,0 +1,106 @@
+## Visual Studio / Rider ##
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Build output ##
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]uild/
+
+## NuGet packages ##
+*.nupkg
+*.snupkg
+*.nuspec
+packages/
+*.nuget.props
+*.nuget.targets
+
+## Resharper / Rider ##
+_ReSharper*/
+*.DotSettings.user
+*.DotSettings
+
+## Test results ##
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+*.coveragexml
+
+## Publish output ##
+publish/
+*.Publish.xml
+*.pubxml
+*.pubxml.user
+
+## IIS Express ##
+.vs/config/
+applicationhost.config
+
+## Windows files ##
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+## Rider / JetBrains Cache ##
+.idea/
+*.iml
+
+## ASP.NET Scaffolding ##
+ScaffoldingReadMe.txt
+
+## Azure stuff ##
+*.azurePubxml
+ServiceDependencies.json
+ServiceDependencies.local.json
+
+## Secrets and local runtime configuration ##
+.env
+.env.*
+!.env.example
+.envrc
+.direnv/
+appsettings.*.local.json
+secrets/
+*.key
+*.pem
+*.pfx
+*.p12
+*.jks
+*.keystore
+
+## Runtime data and user documents ##
+.run/
+*.pid
+*.dmp
+*.dump
+*.db
+*.sqlite
+*.sqlite3
+*.dmp
+heapdump*
+uploads/
+documents/
+storage/
+local-data/
+signed_*.pdf
+*_signed.pdf
+
+## Temporary files ##
+*.tmp
+*.temp
+*.bak
+*.swp
+*~

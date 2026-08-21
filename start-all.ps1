@@ -44,7 +44,10 @@ try {
     if (-not $postgresReady) { throw "PostgreSQL hazir duruma gelmedi." }
 
     $databasePassword = $secretValues['POSTGRES_PASSWORD'].Replace("'", "''")
-    & docker exec eimza-postgres psql -U admin -d eimza_db -c "ALTER USER admin WITH PASSWORD '$databasePassword';" | Out-Null
+    $alterPasswordSql = "ALTER USER admin WITH PASSWORD '$databasePassword';"
+    $alterPasswordSql | & docker exec -i eimza-postgres psql -U admin -d eimza_db | Out-Null
+    $alterPasswordSql = $null
+    $databasePassword = $null
     if ($LASTEXITCODE -ne 0) { throw "PostgreSQL parolasi guvenli degerle guncellenemedi." }
 
     & docker compose up --build -d
@@ -109,6 +112,10 @@ if (-not $signerIsRunning) {
         $env:SIGNER_API_KEY = $previousSignerApiKey
     }
 }
+
+# Sirlar artik bu baslatma surecinde gerekli degil. Bellekte tutulma suresini kisalt.
+$secretValues.Clear()
+$secretValues = $null
 
 $ready = $false
 for ($attempt = 1; $attempt -le 30; $attempt++) {

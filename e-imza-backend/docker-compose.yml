@@ -1,0 +1,98 @@
+services:
+  # 1. PostgreSQL Veritabanı Servisi
+  postgres:
+    image: postgres:14-alpine
+    container_name: eimza-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD .env dosyasında tanımlanmalıdır}
+      - POSTGRES_DB=eimza_db
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d eimza_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 2. MinIO - Dosya Depolama Servisi
+  minio:
+    image: minio/minio:latest
+    container_name: eimza-minio
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:9000:9000"
+      - "127.0.0.1:9001:9001"
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:?MINIO_ROOT_USER .env dosyasında tanımlanmalıdır}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD .env dosyasında tanımlanmalıdır}
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio-data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 3. Backend (Spring Boot) Uygulama Servisi
+  backend:
+    build: .
+    container_name: eimza-backend
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m,noexec,nosuid,nodev
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    ports:
+      - "127.0.0.1:5050:5050"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD .env dosyasında tanımlanmalıdır}
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER:?MINIO_ROOT_USER .env dosyasında tanımlanmalıdır}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD:?MINIO_ROOT_PASSWORD .env dosyasında tanımlanmalıdır}
+      - JWT_SECRET=${JWT_SECRET:?JWT_SECRET .env dosyasında tanımlanmalıdır}
+      - SIGNER_API_KEY=${SIGNER_API_KEY:?SIGNER_API_KEY .env dosyasında tanımlanmalıdır}
+      - SPRINGDOC_API_DOCS_ENABLED=false
+      - SPRINGDOC_SWAGGER_UI_ENABLED=false
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:5050/api/auth/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  # 4. Kullanıcı Arayüzü
+  frontend:
+    build:
+      context: ../e-imza-ui
+    container_name: eimza-ui
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  # 5. Adminer - Veritabanı Yönetim Arayüzü (Opsiyonel)
+  adminer:
+    image: adminer
+    container_name: eimza-adminer
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8082:8080"
+    depends_on:
+      - postgres
+    profiles: ["tools"]
+
+volumes:
+  postgres-data:
+  minio-data:
